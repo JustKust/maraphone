@@ -1,0 +1,187 @@
+CREATE TABLE Charity
+(
+  CharityId INT NOT NULL AUTO_INCREMENT,
+  CharityName VARCHAR(100) NOT NULL,
+  CharityDescription_ VARCHAR(2000) NOT NULL,
+  CharityLogo VARCHAR(50) NOT NULL,
+  PRIMARY KEY (CharityId)
+);
+
+CREATE TABLE Country
+(
+  CountryCode CHAR(3) NOT NULL,
+  CountryName_ VARCHAR(100) NOT NULL,
+  CountryFlag VARCHAR(100) NOT NULL,
+  PRIMARY KEY (CountryCode)
+);
+
+CREATE TABLE EventType
+(
+  EventTypeId CHAR(2) NOT NULL,
+  EventTypeName VARCHAR(50) NOT NULL,
+  PRIMARY KEY (EventTypeId)
+);
+
+CREATE TABLE Gender
+(
+  Gender VARCHAR(10) NOT NULL,
+  PRIMARY KEY (Gender)
+);
+
+CREATE TABLE Marathon
+(
+  MarathonId_ INT NOT NULL,
+  MarathonName VARCHAR(80) NOT NULL,
+  CityName VARCHAR(80) NOT NULL,
+  YearHeld_ SMALLINT NOT NULL,
+  CountryCode CHAR(3) NOT NULL,
+  PRIMARY KEY (MarathonId_),
+  FOREIGN KEY (CountryCode) REFERENCES Country(CountryCode)
+);
+
+CREATE TABLE RaceKitOption
+(
+  RaceKitOptionId_ CHAR(1) NOT NULL,
+  RaceKitOption VARCHAR(80) NOT NULL,
+  RaceKitCost DECIMAL(10,2) NOT NULL,
+  PRIMARY KEY (RaceKitOptionId_)
+);
+
+CREATE TABLE RegistrationStatus
+(
+  RegistrationStatusId_ TINYINT NOT NULL AUTO_INCREMENT,
+  RegistrationStatus VARCHAR(80) NOT NULL,
+  PRIMARY KEY (RegistrationStatusId_)
+);
+
+CREATE TABLE Role
+(
+  RoleId CHAR(1) NOT NULL,
+  RoleName VARCHAR(50) NOT NULL,
+  PRIMARY KEY (RoleId)
+);
+
+CREATE TABLE User
+(
+  Email VARCHAR(100) NOT NULL,
+  Password VARCHAR(100) NOT NULL,
+  FirstName VARCHAR(100) NOT NULL,
+  LastName_ VARCHAR(100) NOT NULL,
+  RoleId CHAR(1) NOT NULL,
+  PRIMARY KEY (Email),
+  FOREIGN KEY (RoleId) REFERENCES Role(RoleId)
+);
+
+CREATE TABLE Position
+(
+  PositionId SMALLINT NOT NULL AUTO_INCREMENT,
+  PositionName_ VARCHAR(50) NOT NULL,
+  PositionDescription VARCHAR(1000) NOT NULL,
+  PayPeriod_ VARCHAR(10) NOT NULL,
+  Payrate DECIMAL(10,2) NOT NULL,
+  PRIMARY KEY (PositionId)
+);
+
+CREATE TABLE Volunteer
+(
+  VolunteerId_ INT NOT NULL AUTO_INCREMENT,
+  FirstName VARCHAR(80) NOT NULL,
+  LastName VARCHAR(80) NOT NULL,
+  Gender VARCHAR(10) NOT NULL,
+  CountryCode CHAR(3) NOT NULL,
+  PRIMARY KEY (VolunteerId_),
+  FOREIGN KEY (Gender) REFERENCES Gender(Gender),
+  FOREIGN KEY (CountryCode) REFERENCES Country(CountryCode)
+);
+
+CREATE TABLE Staff
+(
+  StaffId INT NOT NULL AUTO_INCREMENT,
+  FirstName VARCHAR(80) NOT NULL,
+  LastName_ VARCHAR(80) NOT NULL,
+  Email VARCHAR(100) NOT NULL,
+  DateOfBirth DATETIME NOT NULL,
+  Gender VARCHAR(10) NOT NULL,
+  Comments VARCHAR(2000) NOT NULL,
+  PositionId SMALLINT NOT NULL,
+  PRIMARY KEY (StaffId),
+  FOREIGN KEY (PositionId) REFERENCES Position(PositionId)
+);
+
+CREATE TABLE Timesheet
+(
+  TimesheetId INT NOT NULL AUTO_INCREMENT,
+  StartDateTime_ DATE NOT NULL,
+  EndDateTime DATE NOT NULL,
+  PayAmount DECIMAL(10,2)  NOT NULL,
+  StaffId INT NOT NULL,
+  PRIMARY KEY (TimesheetId),
+  FOREIGN KEY (StaffId) REFERENCES Staff(StaffId)
+);
+
+CREATE TABLE Event
+(
+  EventId CHAR(6) NOT NULL,
+  EventName VARCHAR(50) NOT NULL,
+  StartDateTime DATETIME NOT NULL,
+  Cost DECIMAL(10,2)  NOT NULL,
+  MaxParticipants SMALLINT NOT NULL,
+  EventTypeId CHAR(2) NOT NULL,
+  MarathonId_ TINYINT NOT NULL,
+  PRIMARY KEY (EventId),
+  FOREIGN KEY (EventTypeId) REFERENCES EventType(EventTypeId),
+  FOREIGN KEY (MarathonId_) REFERENCES Marathon(MarathonId_)
+);
+
+CREATE TABLE Runner
+(
+  RunnerId INT NOT NULL AUTO_INCREMENT,
+  Gender VARCHAR(100) NOT NULL,
+  DateOfBirth DATETIME NOT NULL,
+  Email VARCHAR(100) NOT NULL,
+  Gender VARCHAR(10) NOT NULL,
+  CountryCode CHAR(3) NOT NULL,
+  PRIMARY KEY (RunnerId),
+  FOREIGN KEY (Email) REFERENCES User(Email),
+  FOREIGN KEY (Gender) REFERENCES Gender(Gender),
+  FOREIGN KEY (CountryCode) REFERENCES Country(CountryCode)
+);
+
+CREATE TABLE Registration
+(
+  RegistrationId_ INT NOT NULL AUTO_INCREMENT,
+  RegistrationDateTime DATETIME NOT NULL,
+  Cost DECIMAL(10,2) NOT NULL,
+  SponsorshipTarget_ DECIMAL(10,2) NOT NULL,
+  RunnerId INT NOT NULL,
+  CharityId INT NOT NULL,
+  RegistrationStatusId_ TINYINT NOT NULL,
+  RaceKitOptionId_ CHAR(1) NOT NULL,
+  PRIMARY KEY (RegistrationId_),
+  FOREIGN KEY (RunnerId) REFERENCES Runner(RunnerId),
+  FOREIGN KEY (CharityId) REFERENCES Charity(CharityId),
+  FOREIGN KEY (RegistrationStatusId_) REFERENCES RegistrationStatus(RegistrationStatusId_),
+  FOREIGN KEY (RaceKitOptionId_) REFERENCES RaceKitOption(RaceKitOptionId_)
+);
+
+CREATE TABLE Registration_Event
+(
+  RegistrationEventId INT NOT NULL AUTO_INCREMENT,
+  BibNumber SMALLINT NOT NULL,
+  RaceTime INT NOT NULL,
+  RegistrationId_ INT NOT NULL,
+  EventId CHAR(6) NOT NULL,
+  PRIMARY KEY (RegistrationEventId),
+  FOREIGN KEY (RegistrationId_) REFERENCES Registration(RegistrationId_),
+  FOREIGN KEY (EventId) REFERENCES Event(EventId)
+);
+
+CREATE TABLE Sponsorship
+(
+  SponsorshipId INT NOT NULL AUTO_INCREMENT,
+  SponsorName VARCHAR(150) NOT NULL,
+  Amount DECIMAL(10,2) NOT NULL,
+  RegistrationId_ INT NOT NULL,
+  PRIMARY KEY (SponsorshipId),
+  FOREIGN KEY (RegistrationId_) REFERENCES Registration(RegistrationId_)
+);
